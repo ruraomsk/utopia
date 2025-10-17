@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/goburrow/serial"
-	"github.com/ruraomsk/ag-server/logger"
+	"github.com/ruraomsk/potop/logger"
 	"github.com/ruraomsk/potop/setup"
 )
 

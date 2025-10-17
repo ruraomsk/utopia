@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ruraomsk/ag-server/logger"
+	"github.com/ruraomsk/potop/logger"
 )
 
 // From Spot to the controller					Reply from controller

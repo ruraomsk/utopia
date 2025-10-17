@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ruraomsk/ag-server/logger"
 	"github.com/ruraomsk/potop/hardware"
 	"github.com/ruraomsk/potop/journal"
+	"github.com/ruraomsk/potop/logger"
 	"github.com/ruraomsk/potop/setup"
 )
 
