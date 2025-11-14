@@ -114,22 +114,35 @@ func controlUtopiaServer() {
 	}
 
 }
-func (d *Delay) isEq(nd Delay) bool {
-	if d.watchdog != nd.watchdog {
-		return false
-	}
-	for i := 0; i < len(d.ctrlSG); i++ {
-		if d.ctrlSG[i] != nd.ctrlSG[i] {
-			return false
-		}
-	}
-	return true
-}
+
+//	func (d *Delay) isEq(nd Delay) bool {
+//		if d.watchdog != nd.watchdog {
+//			return false
+//		}
+//		for i := 0; i < len(d.ctrlSG); i++ {
+//			if d.ctrlSG[i] != nd.ctrlSG[i] {
+//				return false
+//			}
+//		}
+//		return true
+//	}
 func (d *Delay) clear() {
 	d.work = false
 	d.watchdog = 0
 	for i := range d.ctrlSG {
 		d.ctrlSG[i] = false
+	}
+}
+func do_it() {
+	if !hardware.IsConnectedKDM() {
+		useDelay.clear()
+		return
+	}
+	hs := hardware.GetStateHard()
+	if hs.Ready && useDelay.work {
+		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
+		// journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
+		useDelay.work = false
 	}
 }
 func delays() {
@@ -139,23 +152,11 @@ func delays() {
 	for {
 		select {
 		case newDelay = <-delay:
-			//Пришло новая
-			if !useDelay.isEq(newDelay) {
-				useDelay = newDelay
-				useDelay.work = true
-			}
+			useDelay = newDelay
+			useDelay.work = true
+			do_it()
 		case <-ts.C:
-			if !hardware.IsConnectedKDM() {
-				useDelay.clear()
-				continue
-			}
-			hs := hardware.GetStateHard()
-			if hs.Ready && useDelay.work {
-				hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
-				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
-				useDelay.work = false
-				continue
-			}
+			do_it()
 		}
 	}
 
