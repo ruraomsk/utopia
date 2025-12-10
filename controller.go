@@ -141,14 +141,14 @@ func do_it() {
 	hs := hardware.GetStateHard()
 	if hs.Ready && useDelay.work {
 		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
-		// journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
+		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
 		useDelay.work = false
 	}
 }
 func delays() {
 	useDelay.clear()
 	var newDelay Delay
-	ts := time.NewTicker(250 * time.Millisecond)
+	ts := time.NewTicker(500 * time.Millisecond)
 	for {
 		select {
 		case newDelay = <-delay:
