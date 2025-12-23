@@ -143,6 +143,10 @@ func do_it() {
 		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
 		useDelay.work = false
+	} else {
+		if useDelay.work {
+			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
+		}
 	}
 }
 func delays() {

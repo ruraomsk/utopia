@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ruraomsk/potop/hardware"
+	"github.com/ruraomsk/potop/journal"
 	"github.com/ruraomsk/potop/setup"
 )
 
@@ -48,6 +49,7 @@ func (t *TlcAndGroupControl) execute() {
 		return
 	}
 	if t.command == 2 {
+		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Задано %v", Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}))
 		delay <- Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}
 	}
 	if t.command == 3 {
