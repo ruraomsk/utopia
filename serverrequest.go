@@ -49,7 +49,9 @@ func (t *TlcAndGroupControl) execute() {
 		return
 	}
 	if t.command == 2 {
-		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Задано %v", Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}))
+		if debug {
+			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Задано %v", Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}))
+		}
 		delay <- Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}
 	}
 	if t.command == 3 {

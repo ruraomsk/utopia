@@ -44,6 +44,7 @@ import (
 var ctrl = ControllerUtopia{id: 1, status: 1, lastACK: 0, input: make([]byte, 0), output: make([]byte, 0)}
 var mutex sync.Mutex
 var delay chan Delay
+var debug = true
 
 type Delay struct {
 	work     bool
@@ -141,11 +142,15 @@ func do_it() {
 	hs := hardware.GetStateHard()
 	if hs.Ready && useDelay.work {
 		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
-		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
+		if debug {
+			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
+		}
 		useDelay.work = false
 	} else {
 		if useDelay.work {
-			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
+			if debug {
+				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
+			}
 		}
 	}
 }
