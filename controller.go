@@ -149,6 +149,7 @@ func do_it() {
 	} else {
 		if useDelay.work {
 			if debug {
+				hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
 				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
 			}
 		}
