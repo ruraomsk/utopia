@@ -3,6 +3,9 @@ package utopia
 import "github.com/ruraomsk/potop/hardware"
 
 func GetStatusDirs() []uint8 {
+	// Оперативно считываем состояние направлений
+	hardware.CmdReadStatus <- 1
+	<-hardware.ReplayReadStatus
 	StateHardware := hardware.GetStateHard()
 	result := make([]uint8, 0)
 	var b uint8
