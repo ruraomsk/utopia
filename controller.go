@@ -153,6 +153,7 @@ func do_it() {
 				hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
 				logger.Debug.Printf("Отправлено  %v", useDelay.ctrlSG)
 				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
+				useDelay.work = false
 			}
 		}
 	}
