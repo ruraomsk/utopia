@@ -142,6 +142,7 @@ func do_it() {
 	hs := hardware.GetStateHard()
 	if hs.Ready && useDelay.work {
 		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
+		logger.Debug.Printf("Есть готовность %v", useDelay.ctrlSG)
 		if debug {
 			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
 		}
@@ -150,6 +151,7 @@ func do_it() {
 		if useDelay.work {
 			if debug {
 				hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
+				logger.Debug.Printf("Отправлено  %v", useDelay.ctrlSG)
 				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
 			}
 		}
