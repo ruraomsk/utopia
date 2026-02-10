@@ -44,7 +44,6 @@ import (
 var ctrl = ControllerUtopia{id: 1, status: 1, lastACK: 0, input: make([]byte, 0), output: make([]byte, 0)}
 var mutex sync.Mutex
 var delay chan Delay
-var debug = true
 
 type Delay struct {
 	watchdog int
