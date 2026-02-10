@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/ruraomsk/potop/hardware"
-	"github.com/ruraomsk/potop/journal"
 	"github.com/ruraomsk/potop/setup"
 )
 
@@ -33,41 +32,29 @@ func (t *TlcAndGroupControl) ToString() string {
 }
 func (t *TlcAndGroupControl) execute() {
 	// logger.Debug.Printf("execute TlcAndGroupControl %v", t)
-	if ctrl.autonom {
-		useDelay.clear()
-		return
-	}
 
 	ctrl.status = t.command
 	if t.command == 0 {
-		useDelay.clear()
 		return
 	}
 	if t.command == 1 {
 		hardware.CommandToKDM(1, 0)
-		useDelay.clear()
 		return
 	}
 	if t.command == 2 {
-		if debug {
-			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Задано %v", Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}))
-		}
 		delay <- Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}
 	}
 	if t.command == 3 {
 		hardware.CommandToKDM(1, 0)
 		hardware.CommandToKDM(3, 1)
-		useDelay.clear()
 	}
 	if t.command == 6 {
 		hardware.CommandToKDM(1, 0)
 		hardware.CommandToKDM(3, 0)
-		useDelay.clear()
 	}
 	if t.command == 7 {
 		hardware.CommandToKDM(1, 0)
 		hardware.CommandToKDM(7, t.watchdog)
-		useDelay.clear()
 	}
 
 }

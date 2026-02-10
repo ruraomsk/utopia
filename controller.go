@@ -47,12 +47,9 @@ var delay chan Delay
 var debug = true
 
 type Delay struct {
-	work     bool
 	watchdog int
 	ctrlSG   [64]bool
 }
-
-var useDelay Delay
 
 func getDuration() time.Duration {
 	return 25 * time.Second
@@ -116,64 +113,18 @@ func controlUtopiaServer() {
 
 }
 
-//	func (d *Delay) isEq(nd Delay) bool {
-//		if d.watchdog != nd.watchdog {
-//			return false
-//		}
-//		for i := 0; i < len(d.ctrlSG); i++ {
-//			if d.ctrlSG[i] != nd.ctrlSG[i] {
-//				return false
-//			}
-//		}
-//		return true
-//	}
-func (d *Delay) clear() {
-	d.work = false
-	d.watchdog = 0
-	for i := range d.ctrlSG {
-		d.ctrlSG[i] = false
-	}
-}
-func do_it() {
-	if !hardware.IsConnectedKDM() {
-		useDelay.clear()
-		return
-	}
-	hs := hardware.GetStateHard()
-	if hs.Ready && useDelay.work {
-		hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
-		logger.Debug.Printf("Есть готовность %v", useDelay.ctrlSG)
-		if debug {
-			journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Исполнено %v", useDelay))
-		}
-		useDelay.work = false
-	} else {
-		if useDelay.work {
-			if debug {
-				hardware.SetTLC(useDelay.watchdog, useDelay.ctrlSG)
-				logger.Debug.Printf("Отправлено  %v", useDelay.ctrlSG)
-				journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("Нет готовности %v", useDelay.work))
-				useDelay.work = false
-			}
-		}
-	}
-}
 func delays() {
-	useDelay.clear()
 	var newDelay Delay
-	ts := time.NewTicker(500 * time.Millisecond)
 	for {
-		select {
-		case newDelay = <-delay:
-			useDelay = newDelay
-			useDelay.work = true
-			do_it()
-		case <-ts.C:
-			do_it()
+		newDelay = <-delay
+		if !hardware.IsConnectedKDM() {
+			continue
 		}
+		hardware.SetTLC(newDelay.watchdog, newDelay.ctrlSG)
+		logger.Debug.Printf("Отправлено  %v", newDelay.ctrlSG[0:16])
 	}
-
 }
+
 func Controller() {
 
 	SetAutonom(setup.Set.Utopia.Avtonom)
@@ -231,11 +182,7 @@ func workMessage() {
 		}
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("<- %s", ctrl.TlcAndGroupControl.ToString()))
 		ctrl.TlcAndGroupControl.execute()
-		// logger.Debug.Printf("after execute")
-		// ctrl.status = ctrl.TlcAndGroupControl.command
-		// logger.Debug.Printf("after command")
 		ctrl.StatusAndDetections.fill()
-		// logger.Debug.Printf("after fill")
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("-> %s", ctrl.StatusAndDetections.ToString()))
 		ctrl.sendReplay(ctrl.StatusAndDetections.toData())
 	case 8:
@@ -267,7 +214,6 @@ func workMessage() {
 			logger.Error.Print(err.Error())
 		}
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("<- %v", ctrl.DateAndTime.toData()))
-		// fmt.Println(ctrl.DateAndTime.DateTime.String())
 		ctrl.sendLive()
 	case 0:
 		// Message 0 – Diagnostic request message
