@@ -24,7 +24,7 @@ type StatusAndDetections struct {
 	//  bit05 (0x20): “lamp fault”
 	//  bit06 (0x40): [not used]
 	//  bit07 (0x80): “extended diagnostics update”
-	sensors [120]sensor
+	sensors [64]sensor
 }
 
 type sensor struct {
@@ -101,7 +101,7 @@ func (s *StatusAndDetections) fromData(data []byte) error {
 	s.TLCstatus = data[2]
 	s.TLCbasic = data[3]
 	j := 4
-	for i := 0; i < 120; i++ {
+	for i := 0; i < len(s.sensors); i++ {
 		s.sensors[i].counts = int(data[j])
 		j++
 		s.sensors[i].occupancy = int(data[j])

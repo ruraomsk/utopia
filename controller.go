@@ -158,6 +158,7 @@ func workMessage() {
 	mutex.Lock()
 	defer mutex.Unlock()
 	if err := ctrl.verify(); err != nil {
+		logger.Error.Printf("% 02X", ctrl.input)
 		logger.Error.Print(err.Error())
 		ctrl.sendNACK()
 		return
