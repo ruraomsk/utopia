@@ -44,6 +44,7 @@ import (
 var ctrl = ControllerUtopia{id: 1, status: 1, lastACK: 0, input: make([]byte, 0), output: make([]byte, 0)}
 var mutex sync.Mutex
 var delay chan Delay
+var isUtopiaCtrl = false
 
 type Delay struct {
 	watchdog int
@@ -117,8 +118,14 @@ func delays() {
 	for {
 		newDelay = <-delay
 		if !hardware.IsConnectedKDM() {
+			isUtopiaCtrl = false
 			continue
 		}
+		if !isUtopiaCtrl && newDelay.ctrlSG != [64]bool{} {
+			hardware.SetTLC(1, [64]bool{})
+			time.Sleep(100 * time.Millisecond)
+		}
+		isUtopiaCtrl = true
 		hardware.SetTLC(newDelay.watchdog, newDelay.ctrlSG)
 		logger.Debug.Printf("Отправлено  %v", newDelay.ctrlSG[0:16])
 	}
