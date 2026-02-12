@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ruraomsk/potop/hardware"
+	"github.com/ruraomsk/potop/logger"
 	"github.com/ruraomsk/potop/setup"
 )
 
@@ -31,7 +32,6 @@ func (t *TlcAndGroupControl) ToString() string {
 	return res
 }
 func (t *TlcAndGroupControl) execute() {
-	// logger.Debug.Printf("execute TlcAndGroupControl %v", t)
 
 	ctrl.status = t.command
 	if t.command == 0 {
@@ -39,6 +39,7 @@ func (t *TlcAndGroupControl) execute() {
 	}
 	if t.command == 1 {
 		hardware.CommandToKDM(1, 0)
+		logger.Debug.Printf("Выполняем коменду %v Переход в локальный режим", t)
 		return
 	}
 	if t.command == 2 {
