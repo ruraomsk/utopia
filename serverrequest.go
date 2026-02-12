@@ -39,7 +39,7 @@ func (t *TlcAndGroupControl) execute() {
 	}
 	if t.command == 1 {
 		hardware.CommandToKDM(1, 0)
-		logger.Debug.Printf("Выполняем коменду %v Переход в локальный режим", t)
+		logger.Debug.Printf("Выполняем команду Переход в локальный режим")
 		isUtopiaCtrl = false
 		return
 	}
