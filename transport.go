@@ -138,7 +138,6 @@ mloop:
 }
 func getFromServer() ([]byte, error) {
 	header := make([]byte, 0)
-
 	context <- true
 	count := 0
 	for count != 6 {
@@ -156,16 +155,13 @@ func getFromServer() ([]byte, error) {
 		var b []byte = []byte{0}
 		n, _ := port.Read(b)
 		if n == 1 {
-			body = append(header, b...)
+			body = append(body, b...)
 			count += n
 		}
 	}
 	// logger.Debug.Printf("read %d %v", n, body)
 	context <- false
-	if err != nil {
-		return body, err
-	}
-	// logger.Debug.Printf("from Utopia % 02X", body[:n])
+	logger.Debug.Printf("from Utopia [% 02X] [% 02X]", header, body)
 	return append(header, body...), nil
 }
 func sendToServer(buffer []byte) error {
