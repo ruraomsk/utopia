@@ -50,6 +50,9 @@ type Delay struct {
 	watchdog int
 	ctrlSG   [64]bool
 }
+type messageUtopia struct {
+	message []byte
+}
 
 func getDuration() time.Duration {
 	return 25 * time.Second
@@ -143,19 +146,26 @@ func Controller() {
 	go delays()
 	go controlUtopiaServer()
 	for {
-		ctrl.input = <-fromServer
+		buffer := <-fromServer
+		//Разберем
+		messages := parserMessage(buffer)
 		// logger.Debug.Print(ctrl.input)
 		if hardware.IsConnectedKDM() {
-			workMessage()
+			for _, v := range messages {
+				workMessage(v)
+			}
 		} else {
 			if setup.Set.Utopia.Replay {
-				workMessage()
+				for _, v := range messages {
+					workMessage(v)
+				}
 			}
 		}
 	}
 }
-func workMessage() {
+func workMessage(message messageUtopia) {
 	mutex.Lock()
+	ctrl.input = message.message
 	defer mutex.Unlock()
 	if err := ctrl.verify(); err != nil {
 		logger.Error.Printf("% 02X", ctrl.input)

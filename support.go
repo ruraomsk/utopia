@@ -134,3 +134,20 @@ func getExtendError() ExtError {
 	}
 	return ExtError{code: [3]byte{0, 0, 0}}
 }
+func parserMessage(buffer []byte) []messageUtopia {
+	result := make([]messageUtopia, 0)
+	for len(buffer) > 0 {
+		count := 0
+		for _, v := range buffer {
+			if v != 0xff {
+				break
+			}
+			count++
+		}
+		buffer = buffer[count:]
+		l := buffer[5] + 9
+		result = append(result, messageUtopia{message: buffer[0:l]})
+		buffer = buffer[l:]
+	}
+	return result
+}
