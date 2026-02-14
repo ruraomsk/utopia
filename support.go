@@ -151,3 +151,24 @@ func parserMessage(buffer []byte) []messageUtopia {
 	}
 	return result
 }
+func fixSpotMessage(data []byte) []byte {
+	if len(data) != 19 || data[5] != 0x0A {
+		return data
+	}
+
+	corrected := make([]byte, 20)
+
+	// Копируем заголовок
+	copy(corrected[:6], data[:6])
+
+	// Увеличиваем длину на 1 (было 10, стало 11 байт данных)
+	corrected[5] = 0x0B
+
+	// Вставляем правильный Message ID (0x02 вместо 0x01)
+	corrected[6] = 0x02
+
+	// Signal groups (сдвигаем остальное)
+	copy(corrected[7:], data[6:]) // 8 байт групп
+
+	return corrected
+}

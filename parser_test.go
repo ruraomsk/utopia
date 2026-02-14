@@ -14,6 +14,10 @@ func TestParserBuffer(t *testing.T) {
 	messages := parserMessage(buffer)
 	for _, v := range messages {
 		t.Errorf("% 02X", v)
+		if v.message[5] == 0x0a {
+			res := fixSpotMessage(v.message)
+			t.Errorf("% 02X!", res)
+		}
 		ctrl.input = v.message
 		err := ctrl.verify()
 		if err != nil {

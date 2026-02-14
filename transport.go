@@ -88,10 +88,8 @@ func Transport() {
 		}
 	}
 	go ctrlContext()
-	utopiaError := false
 	count := 0
 	config := serial.Config{Address: setup.Set.Utopia.Device, BaudRate: setup.Set.Utopia.BaudRate, StopBits: 0, Parity: "N", Timeout: 5 * time.Second}
-mloop:
 	for {
 		if !statusTransport.getConnect() {
 			time.Sleep(5 * time.Second)
@@ -106,34 +104,43 @@ mloop:
 			statusTransport.setConnect(true)
 			count = 0
 		}
+		go listner()
 		logger.Info.Printf("spot open port %s %d ", setup.Set.Utopia.Device, setup.Set.Utopia.BaudRate)
+		clicker := time.NewTicker(1 * time.Second)
+	mloop:
 		for statusTransport.getConnect() {
-			buffer, err := getFromServer()
-			if err != nil {
-				logger.Error.Printf("recieve from spot %s", err.Error())
-				utopiaError = true
-				port.Close()
-				statusTransport.setConnect(false)
-				continue mloop
+			select {
+			case buff := <-toServer:
+				if statusTransport.getConnect() {
+					err = sendToServer(buff)
+					if err != nil {
+						logger.Error.Printf("send to spot %s", err.Error())
+						port.Close()
+						statusTransport.setConnect(false)
+					}
+				}
+			case <-clicker.C:
+				if !statusTransport.getConnect() {
+					break mloop
+				}
 			}
-			if utopiaError {
-				utopiaError = false
-				continue
-			}
-			fromServer <- buffer
-			statusTransport.setFromServer(buffer)
-			buff := <-toServer
-			// logger.Debug.Print(buff)
-			err = sendToServer(buff)
-			if err != nil {
-				logger.Error.Printf("send to spot %s", err.Error())
-				utopiaError = true
-				port.Close()
-				statusTransport.setConnect(false)
-				continue mloop
-			}
-			statusTransport.setToServer(buff)
+
 		}
+	}
+}
+func listner() {
+	for {
+		if !statusTransport.getConnect() {
+			return
+		}
+		buffer, err := getFromServer()
+		if err != nil {
+			logger.Error.Printf("recieve from spot %s", err.Error())
+			port.Close()
+			statusTransport.setConnect(false)
+			return
+		}
+		fromServer <- buffer
 	}
 }
 func getFromServer() ([]byte, error) {
