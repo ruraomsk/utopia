@@ -137,24 +137,36 @@ mloop:
 	}
 }
 func getFromServer() ([]byte, error) {
-	header := make([]byte, 6)
-	context <- true
-	n, err := port.Read(header)
-	context <- false
-	if err != nil {
-		return header, err
-	}
+	header := make([]byte, 0)
 
-	body := make([]byte, header[5]+3)
 	context <- true
-	n, err = port.Read(body)
+	count := 0
+	for count != 6 {
+		var b []byte = []byte{0}
+		n, _ := port.Read(b)
+		if n == 1 {
+			header = append(header, b...)
+			count += n
+		}
+	}
+	count = 0
+	l := int(header[5] + 3)
+	body := make([]byte, 0)
+	for count != l {
+		var b []byte = []byte{0}
+		n, _ := port.Read(b)
+		if n == 1 {
+			body = append(header, b...)
+			count += n
+		}
+	}
 	// logger.Debug.Printf("read %d %v", n, body)
 	context <- false
 	if err != nil {
 		return body, err
 	}
 	// logger.Debug.Printf("from Utopia % 02X", body[:n])
-	return append(header, body[:n]...), nil
+	return append(header, body...), nil
 }
 func sendToServer(buffer []byte) error {
 	context <- true
