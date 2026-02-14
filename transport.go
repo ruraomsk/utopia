@@ -155,8 +155,9 @@ func getFromServer() ([]byte, error) {
 	return body[:n], nil
 }
 func sendToServer(buffer []byte) error {
+	empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
 	{
-		n, err := port.Write([]byte{0xff, 0xff, 0xff, 0xff, 0xff})
+		n, err := port.Write(empty)
 		if err != nil {
 			return err
 		}
@@ -174,6 +175,6 @@ func sendToServer(buffer []byte) error {
 	if n != len(buffer) {
 		return errors.New("отправлен не весь буфер")
 	}
-	logger.Debug.Printf("send % 02X ", buffer)
+	logger.Debug.Printf("send % 02X ", append(empty, buffer...))
 	return nil
 }
