@@ -144,7 +144,7 @@ func getFromServer() ([]byte, error) {
 	if err != nil {
 		return body, err
 	}
-	logger.Debug.Printf("from Utopia % 02X", body)
+	logger.Debug.Printf("from Utopia % 02X", body[:n])
 	return body[:n], nil
 }
 func sendToServer(buffer []byte) error {

@@ -166,6 +166,7 @@ func Controller() {
 func workMessage(message messageUtopia) {
 	mutex.Lock()
 	ctrl.input = message.message
+	logger.Debug.Printf("work [% 02X]", ctrl.input)
 	defer mutex.Unlock()
 	if err := ctrl.verify(); err != nil {
 		logger.Error.Printf("% 02X", ctrl.input)
