@@ -75,7 +75,7 @@ func Transport() {
 	fromController = make(chan []byte)
 	fromServer = make(chan []byte, 100)
 	toController = make(chan []byte)
-	toServer = make(chan []byte, 100)
+	toServer = make(chan []byte)
 	if setup.Set.Utopia.Debug {
 		statusTransport.setConnect(true)
 		for {
@@ -155,6 +155,16 @@ func getFromServer() ([]byte, error) {
 	return body[:n], nil
 }
 func sendToServer(buffer []byte) error {
+	{
+		n, err := port.Write([]byte{0xff, 0xff, 0xff, 0xff, 0xff})
+		if err != nil {
+			return err
+		}
+		if n != 5 {
+			return errors.New("отправлен не весь буфер")
+		}
+
+	}
 	context <- true
 	n, err := port.Write(buffer)
 	context <- false
@@ -164,5 +174,6 @@ func sendToServer(buffer []byte) error {
 	if n != len(buffer) {
 		return errors.New("отправлен не весь буфер")
 	}
+	logger.Debug.Printf("send % 02X ", buffer)
 	return nil
 }
