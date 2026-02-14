@@ -283,6 +283,9 @@ func workMessage(message messageUtopia) {
 		ctrl.BusDetection.fill()
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("-> %v", ctrl.BusDetection.toData()))
 		ctrl.sendReplay(ctrl.BusDetection.toData())
+	case 1:
+		// Message 1 - Kill him
+
 	default:
 		logger.Error.Printf("Неопознанное сообщение от сервера %d", ctrl.input[6])
 		journal.SendMessage(journal.LevelUtopia, fmt.Sprintf("<- Неопознанное сообщение от сервера %d", ctrl.input[6]))
