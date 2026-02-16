@@ -157,7 +157,7 @@ func getFromServer() ([]byte, error) {
 	n, err := port.Read(body)
 	context <- false
 	if err != nil {
-		return body, err
+		return []byte{}, err
 	}
 	logger.Debug.Printf("from Utopia % 02X", body[:n])
 	return body[:n], nil
