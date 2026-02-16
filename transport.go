@@ -89,7 +89,11 @@ func Transport() {
 	}
 	go ctrlContext()
 	count := 0
-	config := serial.Config{Address: setup.Set.Utopia.Device, BaudRate: setup.Set.Utopia.BaudRate, StopBits: 0, Parity: "N", Timeout: 5 * time.Second}
+	config := serial.Config{Address: setup.Set.Utopia.Device, BaudRate: setup.Set.Utopia.BaudRate,
+		StopBits: 0,
+		Parity:   "N",
+		DataBits: 8,
+		Timeout:  5 * time.Second}
 	for {
 		if !statusTransport.getConnect() {
 			time.Sleep(5 * time.Second)
@@ -103,6 +107,10 @@ func Transport() {
 			}
 			statusTransport.setConnect(true)
 			count = 0
+			body := make([]byte, 2048)
+			context <- true
+			port.Read(body)
+
 		}
 		go listner()
 		logger.Info.Printf("spot open port %s %d ", setup.Set.Utopia.Device, setup.Set.Utopia.BaudRate)
@@ -156,23 +164,13 @@ func getFromServer() ([]byte, error) {
 }
 func sendToServer(buffer []byte) error {
 	empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
-	{
-		n, err := port.Write(empty)
-		if err != nil {
-			return err
-		}
-		if n != 5 {
-			return errors.New("отправлен не весь буфер")
-		}
-
-	}
 	context <- true
-	n, err := port.Write(buffer)
+	n, err := port.Write(append(empty, buffer...))
 	context <- false
 	if err != nil {
 		return err
 	}
-	if n != len(buffer) {
+	if n != (len(buffer) + len(empty)) {
 		return errors.New("отправлен не весь буфер")
 	}
 	logger.Debug.Printf("send % 02X ", append(empty, buffer...))
