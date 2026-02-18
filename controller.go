@@ -165,6 +165,7 @@ func Controller() {
 }
 func workMessage(message messageUtopia) {
 	mutex.Lock()
+	defer mutex.Unlock()
 	ctrl.input = message.message
 	logger.Debug.Printf("work [% 02X]", ctrl.input)
 	defer mutex.Unlock()
