@@ -124,6 +124,9 @@ func Transport() {
 			}
 			fromServer <- buffer
 			buff := <-toServer
+			if len(buff) == 0 {
+				continue
+			}
 			if statusTransport.getConnect() {
 				err = sendToServer(buff)
 				if err != nil {
@@ -133,6 +136,7 @@ func Transport() {
 					break mloop
 				}
 			}
+
 		}
 	}
 }

@@ -149,7 +149,6 @@ func Controller() {
 		buffer := <-fromServer
 		//Разберем
 		messages := parserMessage(buffer)
-		// logger.Debug.Print(ctrl.input)
 		if hardware.IsConnectedKDM() {
 			for _, v := range messages {
 				workMessage(v)
@@ -161,6 +160,7 @@ func Controller() {
 				}
 			}
 		}
+		toServer <- []byte{}
 	}
 }
 func workMessage(message messageUtopia) {
