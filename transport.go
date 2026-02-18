@@ -90,7 +90,7 @@ func Transport() {
 	go ctrlContext()
 	count := 0
 	config := serial.Config{Address: setup.Set.Utopia.Device, BaudRate: setup.Set.Utopia.BaudRate,
-		StopBits: 0,
+		StopBits: 1,
 		Parity:   "N",
 		DataBits: 8,
 		Timeout:  5 * time.Second}
