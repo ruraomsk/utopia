@@ -73,7 +73,7 @@ func ctrlContext() {
 func Transport() {
 	context = make(chan bool)
 	fromController = make(chan []byte)
-	fromServer = make(chan []byte, 100)
+	fromServer = make(chan []byte)
 	toController = make(chan []byte)
 	toServer = make(chan []byte)
 	if setup.Set.Utopia.Debug {
