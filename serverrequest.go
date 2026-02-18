@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/ruraomsk/potop/hardware"
-	"github.com/ruraomsk/potop/logger"
 	"github.com/ruraomsk/potop/setup"
 )
 
@@ -38,10 +37,7 @@ func (t *TlcAndGroupControl) execute() {
 		return
 	}
 	if t.command == 1 {
-		hardware.CommandToKDM(1, 0)
-		logger.Debug.Printf("Выполняем команду Переход в локальный режим")
-		isUtopiaCtrl = false
-		return
+		executorLocal <- 1
 	}
 	if t.command == 2 {
 		delay <- Delay{watchdog: t.watchdog, ctrlSG: t.ctrlSG}

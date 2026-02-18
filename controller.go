@@ -60,6 +60,7 @@ func getDuration() time.Duration {
 
 var TestError = Testing{Work: false, State: 0, ErrorStatus: [3]byte{0, 0, 0}}
 var live chan any
+var executorLocal chan int
 
 func GetControllerUtopia() ControllerUtopia {
 	mutex.Lock()
@@ -142,9 +143,14 @@ func Controller() {
 	}
 	delay = make(chan Delay)
 	live = make(chan any)
+	executorLocal = make(chan int, 100)
+
 	journal.Setter <- journal.SetLevel{Level: journal.LevelUtopia, Double: true}
+
+	go executor()
 	go delays()
 	go controlUtopiaServer()
+
 	for {
 		buffer := <-fromServer
 		//Разберем
@@ -168,7 +174,6 @@ func workMessage(message messageUtopia) {
 	defer mutex.Unlock()
 	ctrl.input = message.message
 	logger.Debug.Printf("work [% 02X]", ctrl.input)
-	defer mutex.Unlock()
 	if err := ctrl.verify(); err != nil {
 		logger.Error.Printf("% 02X", ctrl.input)
 		logger.Error.Print(err.Error())
