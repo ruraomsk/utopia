@@ -9,8 +9,8 @@ func GetStatusDirs() []uint8 {
 	// Оперативно считываем состояние направлений
 	// StateHardware := hardware.GetStateHard()
 	// if time.Since(StateHardware.LastOperation) > 100*time.Millisecond {
-	hardware.CmdReadStatus <- 1
-	<-hardware.ReplayReadStatus
+	// hardware.CmdReadStatus <- 1
+	// <-hardware.ReplayReadStatus
 	StateHardware := hardware.GetStateHard()
 	// }
 	logger.Debug.Printf("Прочитано %v", StateHardware.StatusDirs)
