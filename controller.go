@@ -193,6 +193,7 @@ func workMessage(message messageUtopia) {
 	live <- 0
 	if ctrl.input[5] == 10 {
 		ctrl.input = fixSpotMessage(ctrl.input)
+		ctrl.data = ctrl.input[6 : len(ctrl.input)-3]
 	}
 	switch ctrl.input[6] {
 	case 2:
