@@ -112,23 +112,24 @@ func Transport() {
 			port.Read(body)
 
 		}
-		go listner()
 		logger.Info.Printf("spot open port %s %d ", setup.Set.Utopia.Device, setup.Set.Utopia.BaudRate)
-		clicker := time.NewTicker(1 * time.Second)
 	mloop:
 		for statusTransport.getConnect() {
-			select {
-			case buff := <-toServer:
-				if statusTransport.getConnect() {
-					err = sendToServer(buff)
-					if err != nil {
-						logger.Error.Printf("send to spot %s", err.Error())
-						port.Close()
-						statusTransport.setConnect(false)
-					}
-				}
-			case <-clicker.C:
-				if !statusTransport.getConnect() {
+			buffer, err := getFromServer()
+			if err != nil {
+				logger.Error.Printf("recieve from spot %s", err.Error())
+				port.Close()
+				statusTransport.setConnect(false)
+				break mloop
+			}
+			fromServer <- buffer
+			buff := <-toServer
+			if statusTransport.getConnect() {
+				err = sendToServer(buff)
+				if err != nil {
+					logger.Error.Printf("send to spot %s", err.Error())
+					port.Close()
+					statusTransport.setConnect(false)
 					break mloop
 				}
 			}
@@ -136,21 +137,7 @@ func Transport() {
 		}
 	}
 }
-func listner() {
-	for {
-		if !statusTransport.getConnect() {
-			return
-		}
-		buffer, err := getFromServer()
-		if err != nil {
-			logger.Error.Printf("recieve from spot %s", err.Error())
-			port.Close()
-			statusTransport.setConnect(false)
-			return
-		}
-		fromServer <- buffer
-	}
-}
+
 func getFromServer() ([]byte, error) {
 	body := make([]byte, 2048)
 	context <- true
@@ -163,7 +150,8 @@ func getFromServer() ([]byte, error) {
 	return body[:n], nil
 }
 func sendToServer(buffer []byte) error {
-	empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
+	// empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
+	empty := []byte{}
 	context <- true
 	n, err := port.Write(append(empty, buffer...))
 	context <- false
