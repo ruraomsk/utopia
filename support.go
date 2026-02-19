@@ -40,7 +40,7 @@ func bcc8(b byte, check uint16) uint16 {
 	if b != 0 {
 		var rbit uint16
 		check = check ^ uint16(b)
-		for i := 0; i < 8; i++ {
+		for range 8 {
 			rbit = check & 0x01
 			check = check >> 1
 			if rbit != 0 {

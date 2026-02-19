@@ -2,6 +2,7 @@ package utopia
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ruraomsk/potop/hardware"
@@ -19,16 +20,17 @@ type TlcAndGroupControl struct {
 }
 
 func (t *TlcAndGroupControl) ToString() string {
-	res := fmt.Sprintf("Message 02 %s %d %d [ ", toString(t.lastop), t.command, t.watchdog)
+	var res strings.Builder
+	res.WriteString(fmt.Sprintf("Message 02 %s %d %d [ ", toString(t.lastop), t.command, t.watchdog))
 	for _, v := range t.ctrlSG {
 		if !v {
-			res += "X"
+			res.WriteString("X")
 		} else {
-			res += "_"
+			res.WriteString("_")
 		}
 	}
-	res += " ]"
-	return res
+	res.WriteString(" ]")
+	return res.String()
 }
 func (t *TlcAndGroupControl) execute() {
 
@@ -68,7 +70,7 @@ func (t *TlcAndGroupControl) toData() []byte {
 		//Через задницу
 		j := 0 //Позиция в результате
 		l := 0 //Номер бита
-		for i := 0; i < len(t.ctrlSG); i++ {
+		for i := range len(t.ctrlSG) {
 			d := 0
 			if t.ctrlSG[i] {
 				d = 1
@@ -87,7 +89,7 @@ func (t *TlcAndGroupControl) toData() []byte {
 		//По феншую
 		j := 0 //Позиция в результате
 		l := 7 //Номер бита
-		for i := 0; i < len(t.ctrlSG); i++ {
+		for i := range len(t.ctrlSG) {
 			d := 0
 			if t.ctrlSG[i] {
 				d = 1
@@ -118,7 +120,7 @@ func (t *TlcAndGroupControl) fromData(data []byte) error {
 		//Через задницу
 		j := 0
 		l := 0
-		for i := 0; i < len(t.ctrlSG); i++ {
+		for i := range len(t.ctrlSG) {
 			if (data[3+j]>>l)&1 > 0 {
 				t.ctrlSG[i] = true
 			} else {
@@ -135,7 +137,7 @@ func (t *TlcAndGroupControl) fromData(data []byte) error {
 		//По феншую
 		j := 0
 		l := 7
-		for i := 0; i < len(t.ctrlSG); i++ {
+		for i := range len(t.ctrlSG) {
 			if (data[3+j]>>l)&1 > 0 {
 				t.ctrlSG[i] = true
 			} else {
@@ -205,7 +207,7 @@ func (c *CountDown) fromData(data []byte) error {
 	// 	}
 	// 	logger.Debug.Printf("counts %v", c.counts)
 	// } else {
-	for i := 0; i < len(c.counts); i++ {
+	for i := range len(c.counts) {
 		c.counts[i] = data[i+2]
 	}
 	// }
@@ -271,7 +273,7 @@ func (e *ExtendedCountDown) fromData(data []byte) error {
 	e.index = int(data[2])
 	e.stage = int(data[3])
 	e.signalplan = int(data[4])
-	for i := 0; i < len(e.spare); i++ {
+	for i := range len(e.spare) {
 		e.spare[i] = data[i+5]
 	}
 	// if setup.Set.Utopia.Recode {
@@ -283,7 +285,7 @@ func (e *ExtendedCountDown) fromData(data []byte) error {
 	// 		}
 	// 	}
 	// } else {
-	for i := 0; i < len(e.counts); i++ {
+	for i := range len(e.counts) {
 		e.counts[i] = data[i+10]
 	}
 	// }

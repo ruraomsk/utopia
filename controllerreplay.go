@@ -63,7 +63,7 @@ func (s *StatusAndDetections) fill() {
 	if s.plan < 1 || s.plan > 24 {
 		s.plan = 1
 	}
-	for i := 0; i < len(s.sensors); i++ {
+	for i := range len(s.sensors) {
 		s.sensors[i].counts = 0xff
 		s.sensors[i].occupancy = 0xff
 	}
@@ -101,7 +101,7 @@ func (s *StatusAndDetections) fromData(data []byte) error {
 	s.TLCstatus = data[2]
 	s.TLCbasic = data[3]
 	j := 4
-	for i := 0; i < len(s.sensors); i++ {
+	for i := range len(s.sensors) {
 		s.sensors[i].counts = int(data[j])
 		j++
 		s.sensors[i].occupancy = int(data[j])
@@ -131,7 +131,7 @@ func (s *SignalGroupFeedback) ToString() string {
 }
 
 func (s *SignalGroupFeedback) fill() {
-	for i := 0; i < len(s.states); i++ {
+	for i := range len(s.states) {
 		s.states[i] = 255
 	}
 	for i, v := range GetStatusDirs() {
@@ -165,7 +165,7 @@ func (s *SignalGroupFeedback) fromData(data []byte) error {
 	s.lastop = time.Now()
 	j := 1
 	l := 4
-	for i := 0; i < len(s.states); i++ {
+	for i := range len(s.states) {
 		s.states[i] = int((data[j] >> l) & 0xf)
 		l -= 4
 		if l < 0 {
@@ -250,7 +250,7 @@ func (c *ClassifiedCounts) fill() {
 	var sensor Sensor
 	c.Sensors = make([]Sensor, 0)
 	sensor.counts = make([]int, classes)
-	for i := 0; i < sensors; i++ {
+	for range sensors {
 		c.Sensors = append(c.Sensors, sensor)
 	}
 }
@@ -305,7 +305,7 @@ func (c *ClassifiedSpeeds) fill() {
 	var sensor Sensor
 	c.Sensors = make([]Sensor, 0)
 	sensor.counts = make([]int, classes)
-	for i := 0; i < sensors; i++ {
+	for range sensors {
 		c.Sensors = append(c.Sensors, sensor)
 	}
 }

@@ -123,7 +123,7 @@ func Server() {
 		case <-sendTLC.C:
 			serv.TlcAndGroupControl.command = rand.Intn(7)
 			serv.TlcAndGroupControl.watchdog = rand.Intn(60)
-			for i := 0; i < len(serv.TlcAndGroupControl.ctrlSG); i++ {
+			for i := range len(serv.TlcAndGroupControl.ctrlSG) {
 				if rand.Intn(10) < 5 {
 					serv.TlcAndGroupControl.ctrlSG[i] = false
 				} else {
@@ -133,7 +133,7 @@ func Server() {
 			serv.sendCommand(serv.TlcAndGroupControl.toData())
 			sendTLC = time.NewTimer(time.Duration(serv.TlcAndGroupControl.watchdog) * time.Second)
 		case <-sendCountDown.C:
-			for i := 0; i < len(serv.CountDown.counts); i++ {
+			for i := range len(serv.CountDown.counts) {
 				serv.CountDown.counts[i] = byte(rand.Intn(255))
 			}
 			serv.sendCommand(serv.CountDown.toData())
