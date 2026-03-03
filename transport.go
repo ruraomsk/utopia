@@ -2,7 +2,6 @@ package utopia
 
 import (
 	"errors"
-	"os"
 	"sync"
 	"time"
 
@@ -51,27 +50,7 @@ var port serial.Port
 var err error
 var statusTransport = StatusUtopiaTransport{Connect: false, LastOperation: time.Unix(0, 0), FromServer: make([]byte, 0), ToServer: make([]byte, 0)}
 
-func ctrlContext() {
-	var timer = time.NewTimer(6000 * time.Hour)
-	for {
-		select {
-		case flag := <-context:
-			if !flag {
-				timer.Stop()
-				// logger.Debug.Print("stop timer")
-			} else {
-				timer = time.NewTimer(20 * time.Second)
-				// logger.Debug.Print("start timer")
-			}
-		case <-timer.C:
-			logger.Error.Print("Utopia заблокировалась")
-			time.Sleep(time.Second)
-			os.Exit(100)
-		}
-	}
-}
 func Transport() {
-	context = make(chan bool)
 	fromController = make(chan []byte)
 	fromServer = make(chan []byte)
 	toController = make(chan []byte)
@@ -87,7 +66,6 @@ func Transport() {
 			fromController <- u
 		}
 	}
-	go ctrlContext()
 	count := 0
 	config := serial.Config{Address: setup.Set.Utopia.Device, BaudRate: setup.Set.Utopia.BaudRate,
 		StopBits: 1,
@@ -108,9 +86,7 @@ func Transport() {
 			statusTransport.setConnect(true)
 			count = 0
 			body := make([]byte, 2048)
-			context <- true
 			port.Read(body)
-
 		}
 		logger.Info.Printf("spot open port %s %d ", setup.Set.Utopia.Device, setup.Set.Utopia.BaudRate)
 	mloop:
@@ -136,6 +112,7 @@ func Transport() {
 							break mloop
 						}
 					}
+					break
 				} else {
 					//Накапливаем буфер вывода
 					outputBuffer = append(outputBuffer, []byte{0xff, 0xff, 0xff, 0xff, 0xff}...)
@@ -148,9 +125,7 @@ func Transport() {
 
 func getFromServer() ([]byte, error) {
 	body := make([]byte, 2048)
-	context <- true
 	n, err := port.Read(body)
-	context <- false
 	if err != nil {
 		return []byte{}, err
 	}
@@ -159,16 +134,13 @@ func getFromServer() ([]byte, error) {
 }
 func sendToServer(buffer []byte) error {
 	// empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
-	empty := []byte{}
-	context <- true
-	n, err := port.Write(append(empty, buffer...))
-	context <- false
+	n, err := port.Write(buffer)
 	if err != nil {
 		return err
 	}
-	if n != (len(buffer) + len(empty)) {
+	if n != len(buffer) {
 		return errors.New("отправлен не весь буфер")
 	}
-	logger.Debug.Printf("send % 02X ", append(empty, buffer...))
+	logger.Debug.Printf("send % 02X ", buffer)
 	return nil
 }
