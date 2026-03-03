@@ -123,19 +123,23 @@ func Transport() {
 				break mloop
 			}
 			fromServer <- buffer
+			outputBuffer := make([]byte, 0)
 			for {
 				buff := <-toServer
 				if len(buff) == 0 {
-					break
-				}
-				if statusTransport.getConnect() {
-					err = sendToServer(buff)
-					if err != nil {
-						logger.Error.Printf("send to spot %s", err.Error())
-						port.Close()
-						statusTransport.setConnect(false)
-						break mloop
+					if statusTransport.getConnect() {
+						err = sendToServer(outputBuffer)
+						if err != nil {
+							logger.Error.Printf("send to spot %s", err.Error())
+							port.Close()
+							statusTransport.setConnect(false)
+							break mloop
+						}
 					}
+				} else {
+					//Накапливаем буфер вывода
+					outputBuffer = append(outputBuffer, []byte{0xff, 0xff, 0xff, 0xff, 0xff}...)
+					outputBuffer = append(outputBuffer, buff...)
 				}
 			}
 		}

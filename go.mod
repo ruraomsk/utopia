@@ -1,6 +1,6 @@
 module github.com/ruraomsk/utopia
 
-go 1.23.3
+go 1.23.4
 
 replace github.com/ruraomsk/potop => ../potop
 
