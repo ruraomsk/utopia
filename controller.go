@@ -143,7 +143,7 @@ func Controller() {
 	}
 	delay = make(chan Delay)
 	live = make(chan any)
-	executorLocal = make(chan int, 100)
+	executorLocal = make(chan int)
 
 	journal.Setter <- journal.SetLevel{Level: journal.LevelUtopia, Double: true}
 
