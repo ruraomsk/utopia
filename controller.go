@@ -61,6 +61,7 @@ func getDuration() time.Duration {
 var TestError = Testing{Work: false, State: 0, ErrorStatus: [3]byte{0, 0, 0}}
 var live chan any
 var executorLocal chan int
+var isLocalWork = true
 
 func GetControllerUtopia() ControllerUtopia {
 	mutex.Lock()
@@ -100,6 +101,7 @@ func controlUtopiaServer() {
 				if !ctrl.autonom {
 					hardware.SetWork <- 0
 					hardware.CommandToKDM(0, 1)
+					isLocalWork = true
 					break loop
 				}
 			case <-live:
@@ -130,6 +132,7 @@ func delays() {
 			time.Sleep(100 * time.Millisecond)
 		}
 		isUtopiaCtrl = true
+		isLocalWork = false
 		hardware.SetTLC(newDelay.watchdog, newDelay.ctrlSG)
 		logger.Debug.Printf("Отправлено  %v", newDelay.ctrlSG[0:16])
 	}
