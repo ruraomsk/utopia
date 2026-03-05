@@ -24,7 +24,7 @@ type StatusAndDetections struct {
 	//  bit05 (0x20): “lamp fault”
 	//  bit06 (0x40): [not used]
 	//  bit07 (0x80): “extended diagnostics update”
-	sensors [64]sensor
+	sensors [32]sensor
 }
 
 type sensor struct {
