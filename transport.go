@@ -55,6 +55,7 @@ func Transport() {
 	fromServer = make(chan []byte)
 	toController = make(chan []byte)
 	toServer = make(chan []byte)
+	empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
 	if setup.Set.Utopia.Debug {
 		statusTransport.setConnect(true)
 		for {
@@ -115,8 +116,9 @@ func Transport() {
 					break
 				} else {
 					//Накапливаем буфер вывода
-					outputBuffer = append(outputBuffer, []byte{0xff, 0xff, 0xff, 0xff, 0xff}...)
-					outputBuffer = append(outputBuffer, buff...)
+					outputBuffer = append(append(empty, buff...), outputBuffer...)
+					// outputBuffer = append(outputBuffer, []byte{0xff, 0xff, 0xff, 0xff, 0xff}...)
+					// outputBuffer = append(outputBuffer, buff...)
 				}
 			}
 		}
@@ -133,7 +135,6 @@ func getFromServer() ([]byte, error) {
 	return body[:n], nil
 }
 func sendToServer(buffer []byte) error {
-	// empty := []byte{0xff, 0xff, 0xff, 0xff, 0xff}
 	n, err := port.Write(buffer)
 	if err != nil {
 		return err
