@@ -99,6 +99,7 @@ func Transport() {
 				statusTransport.setConnect(false)
 				break mloop
 			}
+			timeStart := time.Now()
 			fromServer <- buffer
 			outputBuffer := make([]byte, 0)
 			for {
@@ -112,6 +113,7 @@ func Transport() {
 							statusTransport.setConnect(false)
 							break mloop
 						}
+						logger.Debug.Printf("Операция длилась %d миллисекунд", time.Since(timeStart).Milliseconds())
 					}
 					break
 				} else {
