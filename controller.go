@@ -61,6 +61,7 @@ func getDuration() time.Duration {
 var TestError = Testing{Work: false, State: 0, ErrorStatus: [3]byte{0, 0, 0}}
 var live chan any
 var executorLocal chan int
+var setchan chan [64]byte
 var isLocalWork = true
 
 func GetControllerUtopia() ControllerUtopia {
@@ -147,12 +148,14 @@ func Controller() {
 	delay = make(chan Delay)
 	live = make(chan any)
 	executorLocal = make(chan int)
+	setchan = make(chan [64]byte)
 
 	journal.Setter <- journal.SetLevel{Level: journal.LevelUtopia, Double: true}
 
 	go executor()
 	go delays()
 	go controlUtopiaServer()
+	go setter64()
 
 	for {
 		buffer := <-fromServer

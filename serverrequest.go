@@ -169,7 +169,7 @@ func (c CountDown) ToString() string {
 func (c CountDown) execute() {
 	// logger.Debug.Printf("execute CountDown %v", c)
 	if ctrl.status == 2 {
-		hardware.SetSignalCountDown(c.counts)
+		setchan <- c.counts
 	}
 }
 

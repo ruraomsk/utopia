@@ -2,18 +2,10 @@ package utopia
 
 import (
 	"github.com/ruraomsk/potop/hardware"
-	"github.com/ruraomsk/potop/logger"
 )
 
 func GetStatusDirs() []uint8 {
-	// Оперативно считываем состояние направлений
-	// StateHardware := hardware.GetStateHard()
-	// if time.Since(StateHardware.LastOperation) > 100*time.Millisecond {
-	// hardware.CmdReadStatus <- 1
-	// <-hardware.ReplayReadStatus
 	StateHardware := hardware.GetStateHard()
-	// }
-	logger.Debug.Printf("Прочитано %v", StateHardware.StatusDirs)
 	result := make([]uint8, 0)
 	var b uint8
 	for _, v := range StateHardware.StatusDirs {

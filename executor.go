@@ -17,3 +17,13 @@ func executor() {
 		isLocalWork = true
 	}
 }
+func setter64() {
+	for {
+		setup := <-setchan
+		if isLocalWork {
+			continue
+		}
+		hardware.SetSignalCountDown(setup)
+		logger.Debug.Printf("Отправили установку счетчиков")
+	}
+}
