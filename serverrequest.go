@@ -239,7 +239,7 @@ func (e *ExtendedCountDown) ToString() string {
 func (e *ExtendedCountDown) execute() {
 	// logger.Debug.Printf("execute ExtendedCountDown")
 	if ctrl.status == 2 {
-		hardware.SetSignalCountDown(e.counts)
+		setchan <- e.counts
 	}
 }
 
