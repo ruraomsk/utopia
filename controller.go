@@ -130,7 +130,7 @@ func delays() {
 		}
 		if !isUtopiaCtrl && newDelay.ctrlSG != [64]bool{} {
 			hardware.SetTLC(1, [64]bool{})
-			// time.Sleep(100 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 		}
 		isUtopiaCtrl = true
 		isLocalWork = false
