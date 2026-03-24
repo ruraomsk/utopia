@@ -45,7 +45,6 @@ var fromServer chan []byte
 var toServer chan []byte
 var fromController chan []byte
 var toController chan []byte
-var context chan bool
 var port serial.Port
 var err error
 var statusTransport = StatusUtopiaTransport{Connect: false, LastOperation: time.Unix(0, 0), FromServer: make([]byte, 0), ToServer: make([]byte, 0)}
@@ -72,10 +71,10 @@ func Transport() {
 		StopBits: 1,
 		Parity:   "N",
 		DataBits: 8,
-		Timeout:  5 * time.Second}
+		Timeout:  2 * time.Second}
 	for {
 		if !statusTransport.getConnect() {
-			time.Sleep(5 * time.Second)
+			time.Sleep(1 * time.Second)
 			port, err = serial.Open(&config)
 			if err != nil {
 				if (count % 10) == 0 {
