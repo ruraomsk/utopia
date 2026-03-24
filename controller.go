@@ -130,7 +130,7 @@ func delays() {
 		}
 		if !isUtopiaCtrl && newDelay.ctrlSG != [64]bool{} {
 			hardware.SetTLC(1, [64]bool{})
-			time.Sleep(100 * time.Millisecond)
+			// time.Sleep(100 * time.Millisecond)
 		}
 		isUtopiaCtrl = true
 		isLocalWork = false
@@ -145,7 +145,7 @@ func Controller() {
 	if setup.Set.Utopia.Avtonom {
 		ctrl.status = 1
 	}
-	delay = make(chan Delay)
+	delay = make(chan Delay, 3)
 	live = make(chan any)
 	executorLocal = make(chan int)
 	setchan = make(chan [64]byte)
