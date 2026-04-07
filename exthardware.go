@@ -74,6 +74,9 @@ func GetStatusUtopia() byte {
 	if ctrl.status == 0 {
 		return 1
 	}
+	if StateHardware.Plan == 0 {
+		return 1
+	}
 	if StateHardware.Plan != 0 {
 		return 7
 	}
