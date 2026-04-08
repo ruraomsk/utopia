@@ -68,13 +68,14 @@ func GetStatusUtopia() byte {
 	if StateHardware.AllRed || StateHardware.Plan == 26 {
 		return 4
 	}
+	if StateHardware.Plan == 0 {
+		ctrl.status = 1
+		return 1
+	}
 	if ctrl.status == 2 {
 		return 2
 	}
 	if ctrl.status == 0 {
-		return 1
-	}
-	if StateHardware.Plan == 0 {
 		return 1
 	}
 	if StateHardware.Plan != 0 {
